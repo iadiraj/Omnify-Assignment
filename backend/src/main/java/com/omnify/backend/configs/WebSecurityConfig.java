@@ -25,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig {
-        @Value("${frontend.url}")
-        private String frontendURL;
+//        @Value("${frontend.url}")
+//        private String frontendURL;
         private final JwtAuthFilter jwtAuthFilter;
         private static String[] PUBLIC_ROUTES = { "/api/v1/blogs/**", "/api/v1/auth/**", "/swagger-ui/**",
                         "/v3/api-docs/**", "/actuator/**" };
@@ -56,10 +56,10 @@ public class WebSecurityConfig {
                 @Override
                 public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of(frontendURL));
+                        config.setAllowedOrigins(List.of("*"));
                         config.setAllowedMethods(List.of("*"));
                         config.setAllowedHeaders(List.of("*"));
-                        config.setAllowCredentials(true);
+                        config.setAllowCredentials(false);
                         return config;
                 }
         }
