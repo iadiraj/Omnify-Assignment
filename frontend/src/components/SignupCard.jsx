@@ -5,8 +5,11 @@ const SignupCard = ({ onSignUp }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showSnackbar, setShowSnackbar] = useState(false); // State for snackbar visibility
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const { signUp } = useAuthStore();
 
   const handleSignup = async () => {
@@ -32,14 +35,16 @@ const SignupCard = ({ onSignUp }) => {
       setErrorMessage("Password must be at least 6 characters long.");
       return;
     }
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
 
     try {
       const response = await signUp({ name, email, password });
       console.log("Signup successful:", response);
-
-      // Show snackbar on successful signup
       setShowSnackbar(true);
-      setTimeout(() => setShowSnackbar(false), 3000); // Hide snackbar after 3 seconds
+      setTimeout(() => setShowSnackbar(false), 3000);
     } catch (error) {
       console.error("Signup failed:", error);
       setErrorMessage("Signup failed. Please try again.");
@@ -81,20 +86,51 @@ const SignupCard = ({ onSignUp }) => {
           placeholder="Enter your email"
         />
       </div>
-      <div className="mb-6">
+      <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="password">
           Password
         </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter your password"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-3 py-2 pr-16 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700">
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+      </div>
+      <div className="mb-6">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="confirm-password">
+          Confirm Password
+        </label>
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            id="confirm-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-3 py-2 pr-16 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Confirm your password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700">
+            {showConfirmPassword ? "Hide" : "Show"}
+          </button>
+        </div>
       </div>
       {errorMessage && (
         <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
@@ -105,7 +141,6 @@ const SignupCard = ({ onSignUp }) => {
         Sign Up
       </button>
 
-      {/* Snackbar */}
       {showSnackbar && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
           Signup successful!

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createBlog } from "../apis/api";
 import useAuthStore from "../store/authStore";
-import axios from "axios"; // Make sure to import axios
 
 const CreateBlogCard = ({ title = "", content = "", onSave, onCancel }) => {
   const [editedTitle, setEditedTitle] = useState(title);
@@ -9,10 +8,8 @@ const CreateBlogCard = ({ title = "", content = "", onSave, onCancel }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Get auth state using the hook directly
   const { accessToken } = useAuthStore();
 
-  // Validate authentication on component mount
   useEffect(() => {
     if (!accessToken) {
       setError("You must be logged in to create a blog post");
@@ -63,30 +60,34 @@ const CreateBlogCard = ({ title = "", content = "", onSave, onCancel }) => {
   };
 
   return (
-    <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg overflow-hidden relative mx-auto p-6">
+    <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg overflow-hidden relative mx-auto p-4 sm:p-6">
+      {/* Error Message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm sm:text-base">
           <p>{error}</p>
         </div>
       )}
 
+      {/* Title Input */}
       <input
         type="text"
         value={editedTitle}
         onChange={(e) => setEditedTitle(e.target.value)}
-        className="w-full text-3xl font-bold text-gray-800 mb-4 border border-gray-300 rounded p-2"
+        className="w-full text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 border border-gray-300 rounded p-2"
         placeholder="Enter blog title"
       />
 
+      {/* Content Textarea */}
       <textarea
         value={editedContent}
         onChange={(e) => setEditedContent(e.target.value)}
-        className="w-full text-gray-600 text-base mb-6 border border-gray-300 rounded p-2"
+        className="w-full text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 mb-6 border border-gray-300 rounded p-2"
         rows="6"
         placeholder="Enter blog content"
       />
 
-      <div className="mt-4 flex gap-4">
+      {/* Buttons */}
+      <div className="mt-4 flex flex-wrap gap-4">
         <button
           onClick={handleSave}
           disabled={isSaving || !accessToken}

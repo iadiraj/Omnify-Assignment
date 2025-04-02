@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 
 const BlogDetailCard = ({
   id,
@@ -15,13 +16,14 @@ const BlogDetailCard = ({
   const [editedContent, setEditedContent] = useState(content);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmSave, setConfirmSave] = useState(false);
+  const navigate = useNavigate();
 
   const handleSave = () => {
     setConfirmSave(true);
   };
 
-  const confirmSaveAction = () => {
-    onSave({ title: editedTitle, content: editedContent });
+  const confirmSaveAction = async () => {
+    await onSave({ title: editedTitle, content: editedContent });
     setIsEditing(false);
     setConfirmSave(false);
   };
@@ -43,25 +45,27 @@ const BlogDetailCard = ({
             type="text"
             value={editedTitle}
             onChange={(e) => setEditedTitle(e.target.value)}
-            className="w-full text-3xl font-bold text-gray-800 mb-4 border border-gray-300 rounded p-2"
+            className="w-full text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 border border-gray-300 rounded p-2"
           />
           <textarea
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
-            className="w-full text-gray-600 text-base mb-6 border border-gray-300 rounded p-2"
+            className="w-full text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 mb-6 border border-gray-300 rounded p-2"
             rows="6"
           />
         </>
       ) : (
         <>
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">{title}</h1>
-          <p className="text-gray-600 text-base mb-6">{content}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
+            {title}
+          </h1>
+          <p className="text-gray-600 text-sm sm:text-base mb-6">{content}</p>
         </>
       )}
-      <p className="text-gray-500 text-md">Author: {author}</p>
+      <p className="text-gray-500 text-sm sm:text-md">Author: {author}</p>
 
       {loggedInUserId === authorId && (
-        <div className="mt-4 flex gap-4">
+        <div className="mt-4 flex flex-wrap gap-4">
           {isEditing ? (
             <>
               {confirmSave ? (

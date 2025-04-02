@@ -36,8 +36,7 @@ const Details = () => {
     try {
       await updateBlog(id, updatedBlog, accessToken);
       console.log("Blog updated successfully");
-      const response = await getBlog(id);
-      setBlog(response.data);
+      navigate("/");
     } catch (error) {
       console.error("Error updating blog:", error);
     }
@@ -60,19 +59,23 @@ const Details = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavBar title={"Details"} />
-      <main className="flex-grow container mx-auto p-4">
-        <BlogDetailCard
-          id={blog.id}
-          title={blog.title}
-          content={blog.content}
-          author={blog.author?.name}
-          loggedInUserId={userData?.data.id}
-          authorId={blog.author?.id}
-          onSave={handleSave}
-          onDelete={handleDelete}
-        />
+      <NavBar />
+
+      <main className="flex-grow container mx-auto px-4 py-6">
+        <div className="flex flex-col items-center">
+          <BlogDetailCard
+            id={blog.id}
+            title={blog.title}
+            content={blog.content}
+            author={blog.author?.name}
+            loggedInUserId={userData?.data.id}
+            authorId={blog.author?.id}
+            onSave={handleSave}
+            onDelete={handleDelete}
+          />
+        </div>
       </main>
+
       <footer className="bg-gray-800 text-white text-center p-4">
         <p>&copy; 2025 Built by ADITYA RAJ.</p>
       </footer>

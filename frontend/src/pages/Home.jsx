@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import BlogCard from "../components/BlogCard";
-import { Link } from "react-router";
 import NavBar from "../components/Nav";
 import { getAllBlogs } from "../apis/api";
 
@@ -44,38 +43,42 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavBar title={"Home"} />
+      <NavBar />
 
-      <main className="flex-grow flex items-center justify-center">
+      <main className="flex-grow flex items-center justify-center px-4">
         {loading ? (
-          <p className="text-gray-500">Loading blogs...</p>
+          <p className="text-gray-500 text-center">Loading blogs...</p>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <p className="text-red-500 text-center">{error}</p>
         ) : blogs.length > 0 ? (
-          <div className="flex flex-col items-center gap-4 px-4">
+          <div className="flex flex-col items-center w-full max-w-3xl mx-auto">
             {blogs.map((blog) => (
-              <Link to={`/details/${blog.id}`} key={blog.id}>
-                <BlogCard title={blog.title} content={blog.content} />
-              </Link>
+              <div key={blog.id} className="w-full flex justify-center my-4">
+                <BlogCard
+                  title={blog.title}
+                  content={blog.content}
+                  id={blog.id}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No blogs available.</p>
+          <p className="text-gray-500 text-center">No blogs available.</p>
         )}
       </main>
 
-      <div className="sticky bottom-14 bg-white shadow-md py-4">
-        <div className="flex justify-between container mx-auto px-4">
+      <div className="bg-white shadow-md py-4">
+        <div className="flex justify-between items-center container mx-auto px-4">
           <button
             onClick={handlePreviousPage}
             disabled={pageOffset === 0}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50">
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed">
             Previous
           </button>
           <button
             onClick={handleNextPage}
             disabled={blogs.length < pageSize}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50">
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed">
             Next
           </button>
         </div>

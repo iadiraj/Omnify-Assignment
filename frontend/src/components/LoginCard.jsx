@@ -15,7 +15,6 @@ const LoginCard = () => {
       setErrorMessage("Email is required and cannot be blank.");
       return;
     }
-    // Email format validation using regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setErrorMessage("Invalid email format.");

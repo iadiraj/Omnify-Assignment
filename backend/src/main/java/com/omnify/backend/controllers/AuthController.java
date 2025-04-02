@@ -43,18 +43,8 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO loginDTO,
             HttpServletResponse response) {
         String[] token = authService.login(loginDTO);
-        Cookie refreshTokenCookie = new Cookie("refreshToken", token[1]);
-        refreshTokenCookie.setHttpOnly(true);
-        // refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30 * 6);
-        response.addCookie(refreshTokenCookie);
-        Cookie accessTokenCookie = new Cookie("accessToken", token[0]);
-        accessTokenCookie.setHttpOnly(true);
-        // refreshTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(60 * 5);
-        response.addCookie(accessTokenCookie);
+        addCookie(response, "refreshToken", token[1], 60 * 60 * 24 * 30 * 6);
+        addCookie(response, "accessToken", token[0], 60 * 60 * 24 * 5);
         return new ResponseEntity<>(new LoginResponseDTO(token[0]), HttpStatus.OK);
     }
 
@@ -71,30 +61,15 @@ public class AuthController {
                 .orElseThrow(() -> new AuthenticationServiceException("Refresh token not found in Cookies"));
 
         String accessToken = authService.refreshToken(refreshToken);
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        // refreshTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(60 * 5);
-        response.addCookie(accessTokenCookie);
+        addCookie(response, "accessToken", accessToken, 60 * 60 * 24 * 5);
         return ResponseEntity.ok(new LoginResponseDTO(accessToken));
     }
 
     @DeleteMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> delete(HttpServletResponse response) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
-        response.addCookie(refreshTokenCookie);
-        Cookie accessTokenCookie = new Cookie("accessToken", null);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(0);
-        response.addCookie(accessTokenCookie);
+        clearCookie(response, "refreshToken");
+        clearCookie(response, "accessToken");
         authService.delete();
         return new ResponseEntity<>(new ApiResponse<String>("Profile deleted successfully"), HttpStatus.OK);
     }
@@ -102,18 +77,8 @@ public class AuthController {
     @PostMapping(path = "/logout")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<String>> logout(HttpServletResponse response) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
-        response.addCookie(refreshTokenCookie);
-        Cookie accessTokenCookie = new Cookie("accessToken", null);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(0);
-        response.addCookie(accessTokenCookie);
+        clearCookie(response, "refreshToken");
+        clearCookie(response, "accessToken");
         return ResponseEntity.ok(new ApiResponse<>("Logged out successfully"));
     }
 
@@ -122,5 +87,18 @@ public class AuthController {
     public ResponseEntity<UserDTO> getUser(HttpServletResponse response) {
         UserDTO user = modelMapper.map(authService.getCurrentUser(), UserDTO.class);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
+    }
+
+    private void clearCookie(HttpServletResponse response, String name) {
+        addCookie(response, name, null, 0);
     }
 }
