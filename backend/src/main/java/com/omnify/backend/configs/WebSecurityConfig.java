@@ -2,7 +2,6 @@ package com.omnify.backend.configs;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -11,13 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.omnify.backend.security.JwtAuthFilter;
-
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -25,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig {
-//        @Value("${frontend.url}")
-//        private String frontendURL;
+        // @Value("${frontend.url}")
+        // private String frontendURL;
         private final JwtAuthFilter jwtAuthFilter;
         private static String[] PUBLIC_ROUTES = { "/api/v1/blogs/**", "/api/v1/auth/**", "/swagger-ui/**",
-                        "/v3/api-docs/**", "/actuator/**", "/**" };
+                        "/v3/api-docs/**", "/actuator/**" };
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -48,19 +45,17 @@ public class WebSecurityConfig {
 
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
-                return new CustomCorsConfiguration();
-        }
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(List.of("https://main.d22mrz0rn5isur.amplifyapp.com")); // Only frontend
+                                                                                                 // allowed
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // No "*", list
+                                                                                                       // explicitly
+                config.setAllowedHeaders(List.of("*")); // Allow all headers
+                config.setAllowCredentials(true); // Allow credentials (cookies, auth headers)
 
-        @Component
-        public class CustomCorsConfiguration implements CorsConfigurationSource {
-                @Override
-                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of("*"));
-                        config.setAllowedMethods(List.of("*"));
-                        config.setAllowedHeaders(List.of("*"));
-                        config.setAllowCredentials(false);
-                        return config;
-                }
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", config); // Apply to all endpoints
+
+                return source;
         }
 }
