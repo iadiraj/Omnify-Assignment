@@ -29,7 +29,7 @@ public class WebSecurityConfig {
 //        private String frontendURL;
         private final JwtAuthFilter jwtAuthFilter;
         private static String[] PUBLIC_ROUTES = { "/api/v1/blogs/**", "/api/v1/auth/**", "/swagger-ui/**",
-                        "/v3/api-docs/**", "/actuator/**" };
+                        "/v3/api-docs/**", "/actuator/**", "/**" };
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

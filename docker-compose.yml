@@ -12,10 +12,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/database
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=postgres_data
-      - FRONTEND_URL=http://localhost:5173
+      - SPRING_PROFILES_ACTIVE=dev
       - JWT_SECRET=c3b2528feb17f290ec58263d1ce025450e6e1205e87a30637ceed8aa98117bcafe53a4180076e95b70ed283d985f5543b1f65b071d8127f721b436c030b8dc94c70ccee287061597cb590a669ee5b2e2400c0756f441bf7832e6e27ea772ccfdb71cfecd696e70208137af3fdfdf756a3d9359020e18a4190af7991675e6d974
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
       interval: 10s
